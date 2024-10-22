@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <title>Clicker Game</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .block {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 45%;
+        }
+
+        .block h2 {
+            margin-top: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .red-text {
+            color: red;
+            font-weight: bold;
+        }
+
+        .counters {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .counters-column {
+            text-align: left;
+        }
+
+        #timer {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 320px; /* Ajustez la taille selon vos besoins */
+            height: 200px;
+            margin-right: 80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="C:\Users\AdminEtu\.cursor-tutor\Clicker\artworks-Trz3ur7AMmcm4IJz-2hoNzg-t500x500.jpg" alt="Logo du jeu">
+        <h1>Mao Zedong tycoon $$$
+            开儿 艾诶开伊 艾艾 西吉艾艾伊娜伊
+        </h1>
+    </div>
+
+    <p id="timer">Temps restant avant les charges: 3:00</p>
+
+    <div class="counters">
+        <div class="counters-column">
+            <p id="machin_counter">machin(s): 0</p>
+            <p id="thunescounter">thune(s): 0</p>
+        </div>
+        <div class="counters-column">
+            <p id="employes">Employé(s): 0/0</p>
+            <p id="charges">Charges: 0 thunes</p>
+        </div>
+    </div>
+
+    <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
+
+    <button id="clic_button">+1 machin</button>
+    <button id="achat_employe" disabled>Embaucher un employé: 100 thunes</button>
+
+    <div class="container">
+        <div class="block" id="fabrication_block">
+            <h2>Fabrication</h2>
+            <p id="fabrication">Fabrication: 0 employés (0 machins/min)</p>
+            <button id="acheter_usine" disabled>Acheter une usine: 10 thunes</button>
+            <button id="ajouter_fabrication" disabled>Ajouter employé à la fabrication</button>
+        </div>
+
+        <div class="block" id="vente_block">
+            <h2>Vente</h2>
+            <p id="vente">Vente: 0 employés (0 ventes optimisées)</p>
+            <button id="vendre1" disabled>Vendre (12-18 machins)</button>
+            <button id="vendre2" disabled>Vendre (50-80 machins)</button>
+            <button id="vendre3" disabled>Vendre (500-800 machins)</button>
+            <button id="ajouter_vente" disabled>Ajouter employé à la vente</button>
+        </div>
+    </div>
+
+    <script>
+        let machin = 0;
+        let thune = 0;
+        let autocliqueur = false;
+        let autocliqueur_price = 10;
+        let employes = 0;
+        let employe_price = 125; // Prix initial au milieu de la plage
+        const employe_price_range = { min: 100, max: 150 };
+        let employesFabrication = 0;
+        let employesVente = 0;
+        let ventesOptimisees = 0;
+        let earnedSinceLastCharge = 0;
+        let limiteFaillite = 0;
+        let multiplicateurLimite = 1;
+        let timeLeft = 180; // 3 minutes en secondes
+        let usines = 0;
+        let usine_price = 60;
+        let employes_max = 0;
+        let employes_par_usine = 14;
+
+        const clicbutton = document.getElementById('clic_button');
+        const machincounter = document.getElementById('machin_counter');
+        const thunescounter = document.getElementById('thunescounter');
+        const acheterUsine = document.getElementById('acheter_usine');
+        const achatemploye = document.getElementById('achat_employe');
+        const limiteFailliteElement = document.getElementById('limite_faillite');
+        const employesElement = document.getElementById('employes');
+        const fabricationElement = document.getElementById('fabrication');
+        const venteElement = document.getElementById('vente');
+        const vendre1Button = document.getElementById('vendre1');
+        const vendre2Button = document.getElementById('vendre2');
+        const vendre3Button = document.getElementById('vendre3');
+        const ajouterFabricationButton = document.getElementById('ajouter_fabrication');
+        const ajouterVenteButton = document.getElementById('ajouter_vente');
+        const timerElement = document.getElementById('timer');
+        const chargesElement = document.getElementById('charges');
+
+        let currentCharges = 0;
+
+        function updateUI() {
+            machincounter.textContent = `machin(s): ${machin}`;
+            thunescounter.textContent = `thune(s): ${thune}`;
+            employesElement.textContent = `Employé(s): ${employes}/${employes_max}`;
+            fabricationElement.textContent = `Fabrication: ${employesFabrication} employés (${Math.floor(employesFabrication / 3)} machins/min)`;
+            venteElement.textContent = `Vente: ${employesVente} employés (${ventesOptimisees} ventes optimisées)`;
+            limiteFailliteElement.textContent = `-${Math.floor(limiteFaillite)}`;
+            achatemploye.disabled = thune < employe_price || employes >= employes_max;
+            achatemploye.textContent = `Embaucher un employé: ${Math.floor(employe_price)} thunes`;
+            vendre1Button.disabled = machin < vente1Range.cost;
+            vendre2Button.disabled = machin < vente2Range.cost;
+            vendre3Button.disabled = machin < vente3Range.cost;
+            ajouterFabricationButton.disabled = employes === 0 || employesFabrication >= employes_max;
+            ajouterVenteButton.disabled = employes === 0 || employesVente >= employes_max;
+            acheterUsine.disabled = thune < usine_price;
+            acheterUsine.textContent = `Acheter une usine: ${usine_price} thunes`;
+            chargesElement.textContent = `Charges: ${currentCharges} thunes`;
+        }
+
+        clicbutton.addEventListener('click', () => {
+            machin++;
+            updateUI();
+        });
+
+        acheterUsine.addEventListener('click', () => {
+            if (thune >= usine_price) {
+                thune -= usine_price;
+                usines++;
+                employes_max += employes_par_usine;
+                if (!autocliqueur) {
+                    autocliqueur = true;
+                    startAutoclicker();
+                }
+                
+                // Mise à jour du prix de l'usine
+                if (usines === 1) {
+                    usine_price = 800;
+                } else {
+                    usine_price += 1000;
+                }
+                
+                updateUI();
+            }
+        });
+
+        achatemploye.addEventListener('click', () => {
+            if (thune >= employe_price && employes < employes_max) {
+                thune -= employe_price;
+                employes++;
+                updateUI();
+            }
+        });
+
+        function startAutoclicker() {
+            setInterval(() => {
+                if (autocliqueur) {
+                    machin += usines; // Chaque usine produit 1 machin par seconde
+                    updateUI();
+                }
+            }, 1000); // 1 seconde
+        }
+
+        function updateCharges() {
+            let baseCharges = Math.floor(earnedSinceLastCharge * 0.2);
+            let employeCharges = employes * 6;
+            currentCharges = baseCharges + employeCharges;
+            updateUI();
+        }
+
+        function applyCharges() {
+            thune -= currentCharges;
+            earnedSinceLastCharge = 0;
+            timeLeft = 180;
+
+            limiteFaillite = currentCharges * multiplicateurLimite;
+            multiplicateurLimite *= 1.05;
+            updateCharges();
+            checkBankruptcy();
+        }
+
+        function checkBankruptcy() {
+            if (thune < -limiteFaillite) {
+                alert("Vous êtes en faillite ! Le jeu va recommencer.");
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            machin = 0;
+            thune = 0;
+            autocliqueur = false;
+            employes = 0;
+            earnedSinceLastCharge = 0;
+            limiteFaillite = 0;
+            multiplicateurLimite = 1;
+            employe_price = 125; // Prix initial au milieu de la plage
+            employesFabrication = 0;
+            employesVente = 0;
+            ventesOptimisees = 0;
+            usines = 0;
+            employes_max = 0;
+            updateUI();
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                applyCharges();
+            } else {
+                updateCharges(); // Mettre à jour les charges à chaque seconde
+            }
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerElement.textContent = `Temps restant avant les charges: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        let vente1Price = 15;
+        let vente2Price = 65;
+        let vente3Price = 650;
+        const vente1Range = {min: 12, max: 18, cost: 18};
+        const vente2Range = {min: 50, max: 80, cost: 65};
+        const vente3Range = {min: 500, max: 800, cost: 700};
+
+        function updateSellPrices() {
+            vente1Price = updatePrice(vente1Price, vente1Range);
+            vente2Price = updatePrice(vente2Price, vente2Range);
+            vente3Price = updatePrice(vente3Price, vente3Range);
+            
+            vendre1Button.textContent = `Vendre ${vente1Range.cost} machins (${vente1Price} thunes)`;
+            vendre2Button.textContent = `Vendre ${vente2Range.cost} machins (${vente2Price} thunes)`;
+            vendre3Button.textContent = `Vendre ${vente3Range.cost} machins (${vente3Price} thunes)`;
+        }
+
+        function updatePrice(currentPrice, range) {
+            const maxChange = Math.max(1, Math.floor((range.max - range.min) * 0.1));
+            let change = Math.floor(Math.random() * (maxChange * 2 + 1)) - maxChange;
+            let newPrice = currentPrice + change;
+            
+            if (newPrice < range.min) newPrice = range.min;
+            if (newPrice > range.max) newPrice = range.max;
+            
+            return newPrice;
+        }
+
+        setInterval(updateSellPrices, 600); // Mise à jour toutes les 0.6 secondes
+
+        vendre1Button.addEventListener('click', () => vendre(vente1Price, vente1Range.cost));
+        vendre2Button.addEventListener('click', () => vendre(vente2Price, vente2Range.cost));
+        vendre3Button.addEventListener('click', () => vendre(vente3Price, vente3Range.cost));
+
+        function vendre(price, cost) {
+            if (machin >= cost) {
+                machin -= cost;
+                let earned = price;
+                thune += earned;
+                earnedSinceLastCharge += earned;
+                updateUI();
+            }
+        }
+
+        ajouterFabricationButton.addEventListener('click', () => {
+            if (employes > 0 && employesFabrication < employes_max) {
+                employes--;
+                employesFabrication++;
+                updateUI();
+            }
+        });
+
+        ajouterVenteButton.addEventListener('click', () => {
+            if (employes > 0 && employesVente < employes_max) {
+                employes--;
+                employesVente++;
+                ventesOptimisees = Math.floor(employesVente / 3);
+                updateUI();
+            }
+        });
+
+        setInterval(updateTimer, 1000);
+        updateUI(); // Initial UI update
+        updateCharges(); // Mettre à jour les charges initiales
+
+        function updateEmployePrice() {
+            const maxChange = 5; // Changement maximum par mise à jour
+            let change = Math.floor(Math.random() * (maxChange * 2 + 1)) - maxChange;
+            employe_price += change;
+            
+            // S'assurer que le prix reste dans la plage définie
+            if (employe_price < employe_price_range.min) employe_price = employe_price_range.min;
+            if (employe_price > employe_price_range.max) employe_price = employe_price_range.max;
+            
+            updateUI();
+        }
+
+        // Mettre à jour le prix toutes les 2 secondes
+        setInterval(updateEmployePrice, 2000);
+    </script>
+</body>
+
+</html>
