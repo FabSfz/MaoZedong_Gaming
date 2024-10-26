@@ -62,173 +62,319 @@
         }
 
         .header img {
-            width: 320px; /* Ajustez la taille selon vos besoins */
+            width: 320px;
             height: 200px;
             margin-right: 80px;
+        }
+
+        .collaborateur-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
         }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <img src=artworks-Trz3ur7AMmcm4IJz-2hoNzg-t500x500.jpg alt="Logo du jeu">
-        <h1>Mao Zedong tycoon $$$
-            开儿 艾诶开伊 艾艾 西吉艾艾伊娜伊
-        </h1>
+        <img src="C:\Users\AdminEtu\.cursor-tutor\Clicker\artworks-Trz3ur7AMmcm4IJz-2hoNzg-t500x500.jpg" alt="Logo du jeu">
+        <h1>Mao Zedong tycoon $$$ 开儿 艾迪开伊 艾艾 西吉艾艾伊奈伊 </h1>
     </div>
 
-    <p id="timer">Temps restant avant les charges: 3:00</p>
-
-    <div class="counters">
-        <div class="counters-column">
-            <p id="machin_counter">machin(s): 0</p>
-            <p id="thunescounter">thune(s): 0</p>
-        </div>
-        <div class="counters-column">
-            <p id="employes">Employé(s): 0/0</p>
-            <p id="charges">Charges: 0 thunes</p>
-        </div>
+    <div id="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Identifiant">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <button id="login-button">Se connecter</button>
+        <button id="register-button">Créer un compte</button>
+        <p id="login-message"></p>
     </div>
 
-    <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
+    <div id="game-container" style="display:none;">
+        <p id="timer">Temps restant avant les charges: 3:00</p>
 
-    <button id="clic_button">+1 machin</button>
-    <button id="achat_employe" disabled>Embaucher un employé: 100 thunes</button>
-
-    <div class="container">
-        <div class="block" id="fabrication_block">
-            <h2>Fabrication</h2>
-            <p id="fabrication">Fabrication: 0 employés (0 machins/min)</p>
-            <button id="acheter_usine" disabled>Acheter une usine: 10 thunes</button>
-            <button id="ajouter_fabrication" disabled>Ajouter employé à la fabrication</button>
+        <div class="counters">
+            <div class="counters-column">
+                <p id="colis_temu_counter">Colis Temu: 0</p>
+                <p id="thunescounter">thune(s): 0</p>
+            </div>
+            <div class="counters-column">
+                <p id="collaborateurs">Collaborateur(s): 0/0</p>
+                <p id="charges">Charges: 0 thunes</p>
+            </div>
         </div>
 
-        <div class="block" id="vente_block">
-            <h2>Vente</h2>
-            <p id="vente">Vente: 0 employés (0 ventes optimisées)</p>
-            <button id="vendre1" disabled>Vendre (12-18 machins)</button>
-            <button id="vendre2" disabled>Vendre (50-80 machins)</button>
-            <button id="vendre3" disabled>Vendre (500-800 machins)</button>
-            <button id="ajouter_vente" disabled>Ajouter employé à la vente</button>
+        <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
+
+        <button id="clic_button">+1 Colis Temu</button>
+        <button id="achat_collaborateur" disabled>Embaucher un collaborateur: 100 thunes</button>
+
+        <div class="container">
+            <div class="block" id="fabrication_block">
+                <h2>Fabrication</h2>
+                <p id="fabrication">Fabrication: 0 collaborateurs (0 Colis Temu/sec)</p>
+                <button id="acheter_temu_factory" disabled>Acheter une Temu factory: 60 thunes</button>
+                <div class="collaborateur-buttons">
+                    <button id="ajouter_fabrication" disabled>Ajouter collaborateur</button>
+                    <button id="retirer_fabrication" disabled>Retirer collaborateur</button>
+                </div>
+            </div>
+
+            <div class="block" id="envoi_block">
+                <h2>Envoi</h2>
+                <p id="centre_envoi">Centre d'envoi: 0 Colis Temu/sec</p>
+                <button id="envoyer_manuel">Envoyer 1 colis manuellement</button>
+                <div class="collaborateur-buttons">
+                    <button id="ajouter_envoi" disabled>Ajouter collaborateur</button>
+                    <button id="retirer_envoi" disabled>Retirer collaborateur</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let machin = 0;
+        const githubRepo = "<YOUR_GITHUB_USERNAME>/<YOUR_GITHUB_REPO>";
+        const githubToken = "<YOUR_GITHUB_TOKEN>";
+        const apiUrl = `https://api.github.com/repos/${githubRepo}/contents/users.json`;
+
+        const loginButton = document.getElementById('login-button');
+        const registerButton = document.getElementById('register-button');
+        const loginMessage = document.getElementById('login-message');
+        const loginContainer = document.getElementById('login-container');
+        const gameContainer = document.getElementById('game-container');
+
+        async function getUsersFromGitHub() {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    "Authorization": `token ${githubToken}`
+                }
+            });
+            const data = await response.json();
+            const content = atob(data.content);
+            return JSON.parse(content);
+        }
+
+        async function updateUsersOnGitHub(users) {
+            const getUsersResponse = await fetch(apiUrl, {
+                headers: {
+                    "Authorization": `token ${githubToken}`
+                }
+            });
+            const getUsersData = await getUsersResponse.json();
+            const sha = getUsersData.sha;
+
+            const updatedContent = btoa(JSON.stringify(users));
+            await fetch(apiUrl, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `token ${githubToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: "Update user data",
+                    content: updatedContent,
+                    sha: sha
+                })
+            });
+        }
+
+        loginButton.addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const users = await getUsersFromGitHub();
+            if (username in users && users[username] === password) {
+                loginMessage.textContent = 'Connexion réussie';
+                loginContainer.style.display = 'none';
+                gameContainer.style.display = 'block';
+            } else {
+                loginMessage.textContent = 'Identifiant ou mot de passe incorrect';
+            }
+        });
+
+        registerButton.addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const users = await getUsersFromGitHub();
+            if (!(username in users)) {
+                users[username] = password;
+                await updateUsersOnGitHub(users);
+                loginMessage.textContent = 'Compte créé avec succès, vous pouvez maintenant vous connecter';
+            } else {
+                loginMessage.textContent = 'Identifiant déjà existant';
+            }
+        });
+
+        let colisTemu = 0;
         let thune = 0;
         let autocliqueur = false;
-        let autocliqueur_price = 10;
-        let employes = 0;
-        let employe_price = 125; // Prix initial au milieu de la plage
-        const employe_price_range = { min: 100, max: 150 };
-        let employesFabrication = 0;
-        let employesVente = 0;
-        let ventesOptimisees = 0;
+        let collaborateurs = 0;
+        let collaborateur_price = 125;
+        const collaborateur_price_range = { min: 100, max: 150 };
+        let collaborateursFabrication = 0;
+        let collaborateursEnvoi = 0;
+        let collaborateurs_max = 0;
+        let collaborateursNonPlaces = 0;
         let earnedSinceLastCharge = 0;
         let limiteFaillite = 0;
         let multiplicateurLimite = 1;
         let timeLeft = 180; // 3 minutes en secondes
-        let usines = 0;
-        let usine_price = 60;
-        let employes_max = 0;
-        let employes_par_usine = 14;
+        const prixParColis = 10; // Prix fixe par colis envoyé
+        let currentCharges = 0;
+        let temuFactories = 0;
+        const temuFactoryPrice = 60;
 
         const clicbutton = document.getElementById('clic_button');
-        const machincounter = document.getElementById('machin_counter');
+        const colisTemuCounter = document.getElementById('colis_temu_counter');
         const thunescounter = document.getElementById('thunescounter');
-        const acheterUsine = document.getElementById('acheter_usine');
-        const achatemploye = document.getElementById('achat_employe');
+        const acheterTemuFactory = document.getElementById('acheter_temu_factory');
+        const achatcollaborateur = document.getElementById('achat_collaborateur');
         const limiteFailliteElement = document.getElementById('limite_faillite');
-        const employesElement = document.getElementById('employes');
+        const collaborateursElement = document.getElementById('collaborateurs');
         const fabricationElement = document.getElementById('fabrication');
-        const venteElement = document.getElementById('vente');
-        const vendre1Button = document.getElementById('vendre1');
-        const vendre2Button = document.getElementById('vendre2');
-        const vendre3Button = document.getElementById('vendre3');
+        const centreEnvoiElement = document.getElementById('centre_envoi');
+        const envoyerManuelButton = document.getElementById('envoyer_manuel');
         const ajouterFabricationButton = document.getElementById('ajouter_fabrication');
-        const ajouterVenteButton = document.getElementById('ajouter_vente');
+        const retirerFabricationButton = document.getElementById('retirer_fabrication');
+        const ajouterEnvoiButton = document.getElementById('ajouter_envoi');
+        const retirerEnvoiButton = document.getElementById('retirer_envoi');
         const timerElement = document.getElementById('timer');
         const chargesElement = document.getElementById('charges');
 
-        let currentCharges = 0;
+        let autoclickInterval;
+        let envoiInterval;
 
         function updateUI() {
-            machincounter.textContent = `machin(s): ${machin}`;
+            colisTemuCounter.textContent = `Colis Temu: ${colisTemu}`;
             thunescounter.textContent = `thune(s): ${thune}`;
-            employesElement.textContent = `Employé(s): ${employes}/${employes_max}`;
-            fabricationElement.textContent = `Fabrication: ${employesFabrication} employés (${Math.floor(employesFabrication / 3)} machins/min)`;
-            venteElement.textContent = `Vente: ${employesVente} employés (${ventesOptimisees} ventes optimisées)`;
-            limiteFailliteElement.textContent = `-${Math.floor(limiteFaillite)}`;
-            achatemploye.disabled = thune < employe_price || employes >= employes_max;
-            achatemploye.textContent = `Embaucher un employé: ${Math.floor(employe_price)} thunes`;
-            vendre1Button.disabled = machin < vente1Range.cost;
-            vendre2Button.disabled = machin < vente2Range.cost;
-            vendre3Button.disabled = machin < vente3Range.cost;
-            ajouterFabricationButton.disabled = employes === 0 || employesFabrication >= employes_max;
-            ajouterVenteButton.disabled = employes === 0 || employesVente >= employes_max;
-            acheterUsine.disabled = thune < usine_price;
-            acheterUsine.textContent = `Acheter une usine: ${usine_price} thunes`;
+            collaborateursElement.textContent = `Collaborateur(s): ${collaborateursNonPlaces}/${collaborateurs_max} (non placés)`;
+            fabricationElement.textContent = `Fabrication: ${collaborateursFabrication} collaborateurs (${collaborateursFabrication * 2} Colis Temu/sec)`;
+            centreEnvoiElement.textContent = `Centre d'envoi: ${collaborateursEnvoi} collaborateurs (${collaborateursEnvoi} Colis Temu/sec)`;
+            achatcollaborateur.disabled = thune < collaborateur_price || collaborateurs >= collaborateurs_max;
+            achatcollaborateur.textContent = `Embaucher un collaborateur: ${Math.floor(collaborateur_price)} thunes`;
+            acheterTemuFactory.disabled = thune < temuFactoryPrice;
+            acheterTemuFactory.textContent = `Acheter une Temu factory: ${temuFactoryPrice} thunes`;
+            ajouterFabricationButton.disabled = collaborateursNonPlaces === 0;
+            retirerFabricationButton.disabled = collaborateursFabrication === 0;
+            ajouterEnvoiButton.disabled = collaborateursNonPlaces === 0;
+            retirerEnvoiButton.disabled = collaborateursEnvoi === 0;
             chargesElement.textContent = `Charges: ${currentCharges} thunes`;
         }
 
         clicbutton.addEventListener('click', () => {
-            machin++;
+            colisTemu += 1 + (collaborateursFabrication * 2);
             updateUI();
         });
 
-        acheterUsine.addEventListener('click', () => {
-            if (thune >= usine_price) {
-                thune -= usine_price;
-                usines++;
-                employes_max += employes_par_usine;
-                if (!autocliqueur) {
-                    autocliqueur = true;
-                    startAutoclicker();
-                }
-                
-                // Mise à jour du prix de l'usine
-                if (usines === 1) {
-                    usine_price = 800;
-                } else {
-                    usine_price += 1000;
-                }
-                
+        achatcollaborateur.addEventListener('click', () => {
+            if (thune >= collaborateur_price && collaborateurs < collaborateurs_max) {
+                thune -= collaborateur_price;
+                collaborateurs++;
+                collaborateursNonPlaces++;
                 updateUI();
             }
         });
 
-        achatemploye.addEventListener('click', () => {
-            if (thune >= employe_price && employes < employes_max) {
-                thune -= employe_price;
-                employes++;
+        acheterTemuFactory.addEventListener('click', () => {
+            if (thune >= temuFactoryPrice) {
+                thune -= temuFactoryPrice;
+                temuFactories++;
+                collaborateurs_max += 10; // Chaque usine Temu permet d'avoir 10 collaborateurs supplémentaires
+                startAutoColisGeneration();
+                acheterTemuFactory.disabled = true; // Désactiver le bouton après l'achat
                 updateUI();
             }
         });
 
-        function startAutoclicker() {
-            setInterval(() => {
-                if (autocliqueur) {
-                    machin += usines; // Chaque usine produit 1 machin par seconde
+        function startAutoColisGeneration() {
+            if (!autocliqueur) {
+                autocliqueur = true;
+                autoclickInterval = setInterval(() => {
+                    colisTemu += 1 + (collaborateursFabrication * 2);
                     updateUI();
-                }
-            }, 1000); // 1 seconde
+                }, 1000); // Génère 1 colis + bonus par collaborateur chaque seconde
+            }
         }
 
-        function updateCharges() {
-            let baseCharges = Math.floor(earnedSinceLastCharge * 0.2);
-            let employeCharges = employes * 6;
-            currentCharges = baseCharges + employeCharges;
-            updateUI();
+        function startAutoEnvoi() {
+            if (envoiInterval) {
+                clearInterval(envoiInterval);
+            }
+            if (collaborateursEnvoi > 0) {
+                envoiInterval = setInterval(() => {
+                    if (colisTemu > 0) {
+                        let colisEnvoyes = Math.min(collaborateursEnvoi, colisTemu);
+                        colisTemu -= colisEnvoyes;
+                        thune += colisEnvoyes * prixParColis;
+                        earnedSinceLastCharge += colisEnvoyes * prixParColis;
+                        updateUI();
+                    }
+                }, 1000); // Chaque collaborateur envoie 1 colis par seconde
+            }
+        }
+
+        ajouterFabricationButton.addEventListener('click', () => {
+            if (collaborateursNonPlaces > 0) {
+                collaborateursNonPlaces--;
+                collaborateursFabrication++;
+                updateUI();
+            }
+        });
+
+        retirerFabricationButton.addEventListener('click', () => {
+            if (collaborateursFabrication > 0) {
+                collaborateursFabrication--;
+                collaborateursNonPlaces++;
+                updateUI();
+            }
+        });
+
+        ajouterEnvoiButton.addEventListener('click', () => {
+            if (collaborateursNonPlaces > 0) {
+                collaborateursNonPlaces--;
+                collaborateursEnvoi++;
+                startAutoEnvoi();
+                updateUI();
+            }
+        });
+
+        retirerEnvoiButton.addEventListener('click', () => {
+            if (collaborateursEnvoi > 0) {
+                collaborateursEnvoi--;
+                collaborateursNonPlaces++;
+                startAutoEnvoi();
+                updateUI();
+            }
+        });
+
+        envoyerManuelButton.addEventListener('click', () => {
+            if (colisTemu > 0) {
+                colisTemu--;
+                thune += prixParColis;
+                earnedSinceLastCharge += prixParColis;
+                updateUI();
+            }
+        });
+
+        function updateTimer() {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                applyCharges();
+            }
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerElement.textContent = `Temps restant avant les charges: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function applyCharges() {
+            let baseCharges = Math.floor(earnedSinceLastCharge * 0.2);
+            let employeCharges = collaborateurs * 6;
+            currentCharges = baseCharges + employeCharges;
             thune -= currentCharges;
             earnedSinceLastCharge = 0;
             timeLeft = 180;
-
             limiteFaillite = currentCharges * multiplicateurLimite;
             multiplicateurLimite *= 1.05;
-            updateCharges();
+            updateUI();
             checkBankruptcy();
         }
 
@@ -240,113 +386,25 @@
         }
 
         function resetGame() {
-            machin = 0;
+            colisTemu = 0;
             thune = 0;
             autocliqueur = false;
-            employes = 0;
+            collaborateurs = 0;
             earnedSinceLastCharge = 0;
             limiteFaillite = 0;
             multiplicateurLimite = 1;
-            employe_price = 125; // Prix initial au milieu de la plage
-            employesFabrication = 0;
-            employesVente = 0;
-            ventesOptimisees = 0;
-            usines = 0;
-            employes_max = 0;
+            collaborateursFabrication = 0;
+            collaborateursEnvoi = 0;
+            collaborateursNonPlaces = 0;
+            temuFactories = 0;
+            collaborateurs_max = 0;
+            clearInterval(autoclickInterval);
+            clearInterval(envoiInterval);
             updateUI();
         }
-
-        function updateTimer() {
-            timeLeft--;
-            if (timeLeft <= 0) {
-                applyCharges();
-            } else {
-                updateCharges(); // Mettre à jour les charges à chaque seconde
-            }
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
-            timerElement.textContent = `Temps restant avant les charges: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        let vente1Price = 15;
-        let vente2Price = 65;
-        let vente3Price = 650;
-        const vente1Range = {min: 12, max: 18, cost: 18};
-        const vente2Range = {min: 50, max: 80, cost: 65};
-        const vente3Range = {min: 500, max: 800, cost: 700};
-
-        function updateSellPrices() {
-            vente1Price = updatePrice(vente1Price, vente1Range);
-            vente2Price = updatePrice(vente2Price, vente2Range);
-            vente3Price = updatePrice(vente3Price, vente3Range);
-            
-            vendre1Button.textContent = `Vendre ${vente1Range.cost} machins (${vente1Price} thunes)`;
-            vendre2Button.textContent = `Vendre ${vente2Range.cost} machins (${vente2Price} thunes)`;
-            vendre3Button.textContent = `Vendre ${vente3Range.cost} machins (${vente3Price} thunes)`;
-        }
-
-        function updatePrice(currentPrice, range) {
-            const maxChange = Math.max(1, Math.floor((range.max - range.min) * 0.1));
-            let change = Math.floor(Math.random() * (maxChange * 2 + 1)) - maxChange;
-            let newPrice = currentPrice + change;
-            
-            if (newPrice < range.min) newPrice = range.min;
-            if (newPrice > range.max) newPrice = range.max;
-            
-            return newPrice;
-        }
-
-        setInterval(updateSellPrices, 600); // Mise à jour toutes les 0.6 secondes
-
-        vendre1Button.addEventListener('click', () => vendre(vente1Price, vente1Range.cost));
-        vendre2Button.addEventListener('click', () => vendre(vente2Price, vente2Range.cost));
-        vendre3Button.addEventListener('click', () => vendre(vente3Price, vente3Range.cost));
-
-        function vendre(price, cost) {
-            if (machin >= cost) {
-                machin -= cost;
-                let earned = price;
-                thune += earned;
-                earnedSinceLastCharge += earned;
-                updateUI();
-            }
-        }
-
-        ajouterFabricationButton.addEventListener('click', () => {
-            if (employes > 0 && employesFabrication < employes_max) {
-                employes--;
-                employesFabrication++;
-                updateUI();
-            }
-        });
-
-        ajouterVenteButton.addEventListener('click', () => {
-            if (employes > 0 && employesVente < employes_max) {
-                employes--;
-                employesVente++;
-                ventesOptimisees = Math.floor(employesVente / 3);
-                updateUI();
-            }
-        });
 
         setInterval(updateTimer, 1000);
-        updateUI(); // Initial UI update
-        updateCharges(); // Mettre à jour les charges initiales
-
-        function updateEmployePrice() {
-            const maxChange = 5; // Changement maximum par mise à jour
-            let change = Math.floor(Math.random() * (maxChange * 2 + 1)) - maxChange;
-            employe_price += change;
-            
-            // S'assurer que le prix reste dans la plage définie
-            if (employe_price < employe_price_range.min) employe_price = employe_price_range.min;
-            if (employe_price > employe_price_range.max) employe_price = employe_price_range.max;
-            
-            updateUI();
-        }
-
-        // Mettre à jour le prix toutes les 2 secondes
-        setInterval(updateEmployePrice, 2000);
+        updateUI();
     </script>
 </body>
 
