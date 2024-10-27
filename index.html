@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clicker Game</title>
     <style>
         body {
@@ -72,138 +72,66 @@
             justify-content: space-between;
             margin-top: 10px;
         }
+
+        .save-load {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <img src="artworks/artwork.jpg" alt="Logo du jeu">
+        <img src="artworks-Trz3ur7AMmcm4IJz-2hoNzg-t500x500.jpg" alt="Logo du jeu">
         <h1>Mao Zedong tycoon $$$ 开儿 艾迪开伊 艾艾 西吉艾艾伊奈伊 </h1>
     </div>
 
-    <div id="login-container">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Identifiant">
-        <input type="password" id="password" placeholder="Mot de passe">
-        <button id="login-button">Se connecter</button>
-        <button id="register-button">Créer un compte</button>
-        <p id="login-message"></p>
+    <p id="timer">Temps restant avant les charges: 3:00</p>
+
+    <div class="counters">
+        <div class="counters-column">
+            <p id="colis_temu_counter">Colis Temu: 0</p>
+            <p id="thunescounter">thune(s): 0</p>
+        </div>
+        <div class="counters-column">
+            <p id="collaborateurs">Collaborateur(s): 0/0</p>
+            <p id="charges">Charges: 0 thunes</p>
+        </div>
     </div>
 
-    <div id="game-container" style="display:none;">
-        <p id="timer">Temps restant avant les charges: 3:00</p>
+    <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
 
-        <div class="counters">
-            <div class="counters-column">
-                <p id="colis_temu_counter">Colis Temu: 0</p>
-                <p id="thunescounter">thune(s): 0</p>
-            </div>
-            <div class="counters-column">
-                <p id="collaborateurs">Collaborateur(s): 0/0</p>
-                <p id="charges">Charges: 0 thunes</p>
-            </div>
-        </div>
+    <button id="clic_button">+1 Colis Temu</button>
+    <button id="achat_collaborateur" disabled>Embaucher un collaborateur: 100 thunes</button>
 
-        <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
-
-        <button id="clic_button">+1 Colis Temu</button>
-        <button id="achat_collaborateur" disabled>Embaucher un collaborateur: 100 thunes</button>
-
-        <div class="container">
-            <div class="block" id="fabrication_block">
-                <h2>Fabrication</h2>
-                <p id="fabrication">Fabrication: 0 collaborateurs (0 Colis Temu/sec)</p>
-                <button id="acheter_temu_factory" disabled>Acheter une Temu factory: 60 thunes</button>
-                <div class="collaborateur-buttons">
-                    <button id="ajouter_fabrication" disabled>Ajouter collaborateur</button>
-                    <button id="retirer_fabrication" disabled>Retirer collaborateur</button>
-                </div>
-            </div>
-
-            <div class="block" id="envoi_block">
-                <h2>Envoi</h2>
-                <p id="centre_envoi">Centre d'envoi: 0 Colis Temu/sec</p>
-                <button id="envoyer_manuel">Envoyer 1 colis manuellement</button>
-                <div class="collaborateur-buttons">
-                    <button id="ajouter_envoi" disabled>Ajouter collaborateur</button>
-                    <button id="retirer_envoi" disabled>Retirer collaborateur</button>
-                </div>
+    <div class="container">
+        <div class="block" id="fabrication_block">
+            <h2>Fabrication</h2>
+            <p id="fabrication">Fabrication: 0 collaborateurs (0 Colis Temu/sec)</p>
+            <button id="acheter_temu_factory" disabled>Acheter une Temu factory: 60 thunes</button>
+            <div class="collaborateur-buttons">
+                <button id="ajouter_fabrication" disabled>Ajouter collaborateur</button>
+                <button id="retirer_fabrication" disabled>Retirer collaborateur</button>
             </div>
         </div>
+
+        <div class="block" id="envoi_block">
+            <h2>Envoi</h2>
+            <p id="centre_envoi">Centre d'envoi: 0 Colis Temu/sec</p>
+            <button id="envoyer_manuel">Envoyer 1 colis manuellement</button>
+            <div class="collaborateur-buttons">
+                <button id="ajouter_envoi" disabled>Ajouter collaborateur</button>
+                <button id="retirer_envoi" disabled>Retirer collaborateur</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="save-load">
+        <button id="save-game">Sauvegarder la partie</button>
+        <button id="load-game">Charger une sauvegarde</button>
+        <input type="file" id="load-file" style="display: none;" accept=".json">
     </div>
 
     <script>
-        const githubRepo = "ton_nom_d_utilisateur_github/ton_depot_github";
-        const githubToken = "ton_jeton_github";
-        const apiUrl = `https://api.github.com/repos/${githubRepo}/contents/users.json`;
-
-        const loginButton = document.getElementById('login-button');
-        const registerButton = document.getElementById('register-button');
-        const loginMessage = document.getElementById('login-message');
-        const loginContainer = document.getElementById('login-container');
-        const gameContainer = document.getElementById('game-container');
-
-        async function getUsersFromGitHub() {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    "Authorization": `token ${githubToken}`
-                }
-            });
-            const data = await response.json();
-            const content = atob(data.content);
-            return JSON.parse(content);
-        }
-
-        async function updateUsersOnGitHub(users) {
-            const getUsersResponse = await fetch(apiUrl, {
-                headers: {
-                    "Authorization": `token ${githubToken}`
-                }
-            });
-            const getUsersData = await getUsersResponse.json();
-            const sha = getUsersData.sha;
-
-            const updatedContent = btoa(JSON.stringify(users));
-            await fetch(apiUrl, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `token ${githubToken}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "Update user data",
-                    content: updatedContent,
-                    sha: sha
-                })
-            });
-        }
-
-        loginButton.addEventListener('click', async () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const users = await getUsersFromGitHub();
-            if (username in users && users[username] === password) {
-                loginMessage.textContent = 'Connexion réussie';
-                loginContainer.style.display = 'none';
-                gameContainer.style.display = 'block';
-            } else {
-                loginMessage.textContent = 'Identifiant ou mot de passe incorrect';
-            }
-        });
-
-        registerButton.addEventListener('click', async () => {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const users = await getUsersFromGitHub();
-            if (!(username in users)) {
-                users[username] = password;
-                await updateUsersOnGitHub(users);
-                loginMessage.textContent = 'Compte créé avec succès, vous pouvez maintenant vous connecter';
-            } else {
-                loginMessage.textContent = 'Identifiant déjà existant';
-            }
-        });
-
         let colisTemu = 0;
         let thune = 0;
         let autocliqueur = false;
@@ -222,6 +150,7 @@
         let currentCharges = 0;
         let temuFactories = 0;
         const temuFactoryPrice = 60;
+        let temuFactoryAchetee = false;
 
         const clicbutton = document.getElementById('clic_button');
         const colisTemuCounter = document.getElementById('colis_temu_counter');
@@ -249,10 +178,9 @@
             collaborateursElement.textContent = `Collaborateur(s): ${collaborateursNonPlaces}/${collaborateurs_max} (non placés)`;
             fabricationElement.textContent = `Fabrication: ${collaborateursFabrication} collaborateurs (${collaborateursFabrication * 2} Colis Temu/sec)`;
             centreEnvoiElement.textContent = `Centre d'envoi: ${collaborateursEnvoi} collaborateurs (${collaborateursEnvoi} Colis Temu/sec)`;
-            achatcollaborateur.disabled = thune < collaborateur_price || collaborateurs >= collaborateurs_max;
+            achatcollaborateur.disabled = thune < collaborateur_price || collaborateursNonPlaces >= collaborateurs_max;
             achatcollaborateur.textContent = `Embaucher un collaborateur: ${Math.floor(collaborateur_price)} thunes`;
-            acheterTemuFactory.disabled = thune < temuFactoryPrice;
-            acheterTemuFactory.textContent = `Acheter une Temu factory: ${temuFactoryPrice} thunes`;
+            acheterTemuFactory.disabled = thune < temuFactoryPrice || temuFactoryAchetee;
             ajouterFabricationButton.disabled = collaborateursNonPlaces === 0;
             retirerFabricationButton.disabled = collaborateursFabrication === 0;
             ajouterEnvoiButton.disabled = collaborateursNonPlaces === 0;
@@ -261,12 +189,12 @@
         }
 
         clicbutton.addEventListener('click', () => {
-            colisTemu += 1 + (collaborateursFabrication * 2);
+            colisTemu += 1;
             updateUI();
         });
 
         achatcollaborateur.addEventListener('click', () => {
-            if (thune >= collaborateur_price && collaborateurs < collaborateurs_max) {
+            if (thune >= collaborateur_price && collaborateursNonPlaces < collaborateurs_max) {
                 thune -= collaborateur_price;
                 collaborateurs++;
                 collaborateursNonPlaces++;
@@ -275,12 +203,12 @@
         });
 
         acheterTemuFactory.addEventListener('click', () => {
-            if (thune >= temuFactoryPrice) {
+            if (thune >= temuFactoryPrice && !temuFactoryAchetee) {
                 thune -= temuFactoryPrice;
                 temuFactories++;
                 collaborateurs_max += 10; // Chaque usine Temu permet d'avoir 10 collaborateurs supplémentaires
                 startAutoColisGeneration();
-                acheterTemuFactory.disabled = true; // Désactiver le bouton après l'achat
+                temuFactoryAchetee = true;
                 updateUI();
             }
         });
@@ -289,9 +217,9 @@
             if (!autocliqueur) {
                 autocliqueur = true;
                 autoclickInterval = setInterval(() => {
-                    colisTemu += 1 + (collaborateursFabrication * 2);
+                    colisTemu += collaborateursFabrication * 2;
                     updateUI();
-                }, 1000); // Génère 1 colis + bonus par collaborateur chaque seconde
+                }, 1000); // Génère des colis Temu chaque seconde
             }
         }
 
@@ -405,6 +333,102 @@
 
         setInterval(updateTimer, 1000);
         updateUI();
+
+        const saveGameButton = document.getElementById('save-game');
+        const loadGameButton = document.getElementById('load-game');
+        const loadFileInput = document.getElementById('load-file');
+
+        function saveGame() {
+            const gameState = {
+                colisTemu,
+                thune,
+                autocliqueur,
+                collaborateurs,
+                collaborateur_price,
+                collaborateursFabrication,
+                collaborateursEnvoi,
+                temuFactories,
+                collaborateurs_max,
+                collaborateursNonPlaces,
+                temuFactoryAchetee,
+                timeLeft,
+                earnedSinceLastCharge,
+                multiplicateurLimite,
+                currentCharges
+            };
+
+            // Sauvegarde dans le stockage local
+            localStorage.setItem('gameState', JSON.stringify(gameState));
+
+            alert('Sauvegarde effectuée avec succès !');
+        }
+
+        function loadGame(event) {
+            if (event && event.target && event.target.files && event.target.files[0]) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        try {
+                            const gameState = JSON.parse(e.target.result);
+                            restoreGameState(gameState);
+                            alert('Partie chargée avec succès !');
+                        } catch (error) {
+                            alert('Erreur lors du chargement de la sauvegarde.');
+                            console.error(error);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            } else {
+                const savedState = localStorage.getItem('gameState');
+                if (savedState) {
+                    try {
+                        const gameState = JSON.parse(savedState);
+                        restoreGameState(gameState);
+                        alert('Partie chargée avec succès depuis la sauvegarde locale !');
+                    } catch (error) {
+                        alert('Erreur lors du chargement de la sauvegarde locale.');
+                        console.error('Erreur lors du chargement de la sauvegarde locale :', error);
+                    }
+                }
+            }
+        }
+
+        function restoreGameState(gameState) {
+            colisTemu = gameState.colisTemu;
+            thune = gameState.thune;
+            autocliqueur = gameState.autocliqueur;
+            collaborateurs = gameState.collaborateurs;
+            collaborateur_price = gameState.collaborateur_price;
+            collaborateursFabrication = gameState.collaborateursFabrication;
+            collaborateursEnvoi = gameState.collaborateursEnvoi;
+            temuFactories = gameState.temuFactories;
+            collaborateurs_max = gameState.collaborateurs_max;
+            collaborateursNonPlaces = gameState.collaborateursNonPlaces;
+            temuFactoryAchetee = gameState.temuFactoryAchetee;
+            timeLeft = gameState.timeLeft;
+            earnedSinceLastCharge = gameState.earnedSinceLastCharge;
+            multiplicateurLimite = gameState.multiplicateurLimite;
+            currentCharges = gameState.currentCharges;
+
+            updateUI();
+            if (autocliqueur) {
+                startAutoColisGeneration();
+            }
+            if (collaborateursEnvoi > 0) {
+                startAutoEnvoi();
+            }
+        }
+
+        saveGameButton.addEventListener('click', saveGame);
+        loadGameButton.addEventListener('click', () => loadFileInput.click());
+        loadFileInput.addEventListener('change', loadGame);
+
+        // Charger automatiquement la dernière sauvegarde au démarrage du jeu
+        window.addEventListener('load', () => {
+            loadGame();
+        });
     </script>
 </body>
 
