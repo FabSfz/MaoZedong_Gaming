@@ -164,80 +164,327 @@
             align-items: center;
             gap: 15px;
         }
+
+        .companies-menu {
+            width: 200px;  /* Réduit de 250px à 200px */
+            padding: 10px; /* Réduit de 15px à 10px */
+            background-color: #f5f5f5;
+            border-right: 1px solid #ccc;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .catalog-menu {
+            width: 220px;  /* Réduit de 250px à 220px */
+            padding: 10px; /* Réduit de 15px à 10px */
+            background-color: #f5f5f5;
+            border-right: 1px solid #ccc;
+            height: 100vh;
+            position: fixed;
+            left: 220px;
+            top: 0;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        /* Style pour le contenu principal */
+        .game-content {
+            margin-left: 460px; /* 200px (menu entreprises) + 220px (catalogue) + 40px */
+            padding: 20px;
+            max-width: calc(100% - 460px);
+        }
+
+        /* Style pour les items du catalogue */
+        .catalog-item {
+            padding: 8px;
+            margin: 8px 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .catalog-item img {
+            width: 180px;      /* Augmenté de 100px à 180px */
+            height: 180px;     /* Augmenté de 100px à 180px */
+            object-fit: contain;
+            margin-bottom: 5px; /* Réduit de 10px à 5px */
+        }
+
+        /* Style pour les entreprises */
+        .company-item {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85em; /* Réduction de la taille de police */
+        }
+
+        .company-item h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.95em; /* Réduction de la taille du titre */
+        }
+
+        .company-item p {
+            margin: 3px 0;
+            font-size: 0.9em;
+        }
+
+        /* Style pour les titres des menus */
+        .menu-title {
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Style pour le timer de rafraîchissement */
+        #company-refresh-timer {
+            font-size: 0.85em;
+            padding: 5px;
+            margin-bottom: 10px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        /* Style pour les boutons d'achat */
+        .buy-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 4px 8px; /* Réduction du padding */
+            border-radius: 3px;
+            cursor: pointer;
+            width: 90%; /* Réduction de la largeur */
+            margin-top: 5px;
+            font-size: 0.8em; /* Réduction de la taille de police */
+        }
+
+        .buy-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Style pour les items verrouillés */
+        .catalog-item.locked {
+            opacity: 0.7;
+        }
+
+        .catalog-item.locked img {
+            filter: grayscale(100%);
+        }
+
+        .catalog-item.locked .bonus-info {
+            opacity: 0.7;
+        }
+
+        .catalog-item .requirements {
+            font-size: 0.75em; /* Réduit de 0.9em à 0.75em */
+            margin: 4px 0;
+            line-height: 1.2;
+            padding: 3px;
+        }
+
+        /* Style pour le contenu du jeu */
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        /* Style pour les compteurs */
+        .counters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .counter-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1400px) {
+            .game-content {
+                margin-left: 540px;
+                max-width: calc(100% - 560px);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .catalog-menu {
+                width: 220px;
+                left: 240px;
+            }
+            .companies-menu {
+                width: 220px;
+            }
+            .game-content {
+                margin-left: 480px;
+                max-width: calc(100% - 500px);
+            }
+        }
+
+        /* Ajouter des styles pour l'affichage du bonus */
+        .bonus-info {
+            font-size: 0.75em; /* Réduit de 0.9em à 0.75em */
+            padding: 4px;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+
+        .bonus-preview {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .catalog-item.locked .bonus-info {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .requirement-met {
+            color: #2e7d32;
+            font-weight: 500;
+            font-size: 0.75em;
+        }
+
+        .requirement-pending {
+            color: #999;
+            font-size: 0.75em;
+        }
+
+        /* Style pour l'effet de transition */
+        .requirements span {
+            transition: color 0.3s ease;
+        }
+
+        /* Mise à jour du style de la boîte de requirements */
+        .catalog-item .requirements {
+            margin: 8px 0;
+            line-height: 1.4;
+            padding: 5px;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Style pour séparer visuellement les requirements */
+        .requirements span:not(:last-child)::after {
+            content: ", ";
+            color: #666;
+        }
+
+        /* Ajuster l'espacement entre les items */
+        .catalog-item + .catalog-item {
+            margin-top: 12px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <img src="artworks-Trz3ur7AMmcm4IJz-2hoNzg-t500x500.jpg" alt="Logo du jeu">
-        <h1>Mao Zedong tycoon $$$ 开儿 艾迪开伊 艾艾 西吉艾艾伊奈伊 </h1>
-    </div>
-
-    <p id="timer">Temps restant avant les charges: 3:00</p>
-
-    <div class="counters">
-        <div class="counters-column">
-            <div class="counter-with-icon">
-                <p id="colis_temu_counter">Colis Temu: 0</p>
-                <img src="colis_temu.png" alt="Colis Temu" class="counter-icon">
-            </div>
-            <div class="counter-with-icon">
-                <p id="thunescounter">thune(s): 0</p>
-                <img src="Thune.png" alt="Thune" class="counter-icon">
-            </div>
-        </div>
-        <div class="counters-column">
-            <p id="collaborateurs">Collaborateur(s): 0/0</p>
-            <p id="charges">Charges: 0 thunes</p>
-        </div>
-    </div>
-
-    <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
-
-    <button id="clic_button">+1 Colis Temu</button>
-    <button id="achat_collaborateur" disabled>Embaucher un collaborateur: 100 thunes</button>
-
-    <div class="container">
-        <div class="block" id="fabrication_block">
-            <h2>Fabrication</h2>
-            <p id="fabrication">Fabrication: 0 collaborateurs (0 Colis Temu/sec)</p>
-            <button id="acheter_temu_factory" disabled>Acheter une Temu factory: 60 thunes</button>
-            <div class="collaborateur-buttons">
-                <button id="ajouter_fabrication" disabled>Ajouter collaborateur</button>
-                <button id="retirer_fabrication" disabled>Retirer collaborateur</button>
-            </div>
-        </div>
-
-        <div class="block" id="envoi_block">
-            <h2>Envoi</h2>
-            <p id="centre_envoi">Centre d'envoi: 0 Colis Temu/sec</p>
-            <button id="envoyer_manuel">Envoyer 1 colis manuellement</button>
-            <div class="collaborateur-buttons">
-                <button id="ajouter_envoi" disabled>Ajouter collaborateur</button>
-                <button id="retirer_envoi" disabled>Retirer collaborateur</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="save-load">
-        <button id="save-game">Sauvegarder la partie</button>
-        <button id="load-game">Charger une sauvegarde</button>
-        <button id="reset-game" class="reset-button">Réinitialiser la partie</button>
-        <input type="file" id="load-file" style="display: none;" accept=".json">
-    </div>
-
     <div class="main-container">
-        <div class="game-content">
-            <div class="charges-history">
-                <h3>Historique des charges</h3>
-                <div id="charges-list"></div>
-            </div>
+        <div class="companies-menu">
+            <h2 class="menu-title">Entreprises disponibles</h2>
+            <p id="company-refresh-timer">Actualisation dans: 3:00</p>
+            <div id="available-companies"></div>
         </div>
 
-        <div class="charges-history">
-            <h3>Historique des charges</h3>
-            <div id="charges-list"></div>
+        <div class="game-content">
+            <div class="header">
+                <img src="artworks-Trz3ur7AMmcm4IJz-2hoNzg-t500x500.jpg" alt="Logo du jeu">
+                <h1>Mao Zedong tycoon <br> 西吉艾艾伊奈伊 </h1>
+                
+            </div>
+
+            <p id="timer">Temps restant avant les charges: 3:00</p>
+
+            <div class="counters">
+                <div class="counters-column">
+                    <div class="counter-with-icon">
+                        <p id="colis_temu_counter">Colis Temu: 0</p>
+                        <img src="colis_temu.png" alt="Colis Temu" class="counter-icon">
+                    </div>
+                    <div class="counter-with-icon">
+                        <p id="thunescounter">thune(s): 0</p>
+                        <img src="Thune.png" alt="Thune" class="counter-icon">
+                    </div>
+                </div>
+                <div class="counters-column">
+                    <p id="collaborateurs">Collaborateur(s): 0/0</p>
+                    <p id="charges">Charges: 0 thunes</p>
+                </div>
+            </div>
+
+            <p>Limite de faillite: <span id="limite_faillite" class="red-text">0</span></p>
+
+            <button id="clic_button">+1 Colis Temu</button>
+            <button id="achat_collaborateur" disabled>Embaucher un collaborateur: 100 thunes</button>
+
+            <div class="container">
+                <div class="block" id="fabrication_block">
+                    <h2>Fabrication</h2>
+                    <p id="fabrication">Fabrication: 0 collaborateurs (0 Colis Temu/sec)</p>
+                    <button id="acheter_temu_factory" disabled>Acheter une Temu factory: 60 thunes</button>
+                    <div class="collaborateur-buttons">
+                        <button id="ajouter_fabrication" disabled>Ajouter collaborateur</button>
+                        <button id="retirer_fabrication" disabled>Retirer collaborateur</button>
+                    </div>
+                </div>
+
+                <div class="block" id="envoi_block">
+                    <h2>Envoi</h2>
+                    <p id="centre_envoi">Centre d'envoi: 0 Colis Temu/sec</p>
+                    <button id="envoyer_manuel">Envoyer 1 colis manuellement</button>
+                    <div class="collaborateur-buttons">
+                        <button id="ajouter_envoi" disabled>Ajouter collaborateur</button>
+                        <button id="retirer_envoi" disabled>Retirer collaborateur</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="save-load">
+                <button id="save-game">Sauvegarder la partie</button>
+                <button id="load-game">Charger une sauvegarde</button>
+                <button id="reset-game" class="reset-button">Réinitialiser la partie</button>
+                <input type="file" id="load-file" style="display: none;" accept=".json">
+            </div>
+
+            <div class="main-container">
+                <div class="game-content">
+                    <div class="charges-history">
+                        <h3>Historique des charges</h3>
+                        <div id="charges-list"></div>
+                    </div>
+                </div>
+
+                <div class="charges-history">
+                    <h3>Historique des charges</h3>
+                    <div id="charges-list"></div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="catalog-menu">
+        <h2 class="menu-title">Catalogue</h2>
+        <div id="catalog-items"></div>
     </div>
 
     <script>
@@ -284,6 +531,161 @@
         // Ajoutez cette variable pour stocker l'historique des charges
         let chargesHistory = [];
         let currentMonth = 1;
+
+        // Ajouter ces variables globales
+        let availableCompanies = [];
+        let companyRefreshTime = 180; // 3 minutes en secondes
+
+        // Définition des items du catalogue
+        const catalogItems = [
+            {
+                id: 1,
+                image: 'item1.png',
+                required: ['TechnoGlide Electronics', 'LumaPix Devices'],
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 2,
+                image: 'item2.png',
+                required: ['TechnoGlide Electronics', 'VeloTech Sports'], // Partage TechnoGlide avec item1
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 3,
+                image: 'item3.png',
+                required: ['KitchenPro Robotics', 'SmartCook Appliances'],
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 4,
+                image: 'item4.png',
+                required: ['SmartCook Appliances', 'SleepWell Industries'], // Partage SmartCook avec item3
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 5,
+                image: 'item5.png',
+                required: ['EcoGreen Solutions', 'AquaPure Systems'],
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 6,
+                image: 'item6.png',
+                required: ['PetJoy Electronics', 'AquaPure Systems'], // Partage AquaPure avec item5
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 7,
+                image: 'item7.png',
+                required: ['BeautyTech Labs', 'TechnoGlide Electronics'], // Partage TechnoGlide avec item1 et item2
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 8,
+                image: 'item8.png',
+                required: ['SmartHome Dynamics', 'LightFlow Industries'],
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 9,
+                image: 'item9.png',
+                required: ['FitLife Gear', 'GymTech Gear'],
+                unlocked: false,
+                bonus: 0
+            },
+            {
+                id: 10,
+                image: 'item10.png',
+                required: ['AudioMax Systems', 'SoundWave Audio'],
+                unlocked: false,
+                bonus: 0
+            }
+        ];
+
+        // Fonction pour calculer le bonus d'un item
+        function calculateItemBonus(requiredCompanies) {
+            let totalPrice = 0;
+            requiredCompanies.forEach(companyName => {
+                const company = entreprises.find(e => e.nom === companyName);
+                if (company) {
+                    totalPrice += company.prix;
+                }
+            });
+            return Math.ceil(totalPrice / 2000);
+        }
+
+        // Fonction pour calculer le bonus total actuel
+        function calculateTotalBonus() {
+            let bonus = 2; // Valeur de base
+            catalogItems.forEach(item => {
+                if (item.unlocked) {
+                    bonus += item.bonus;
+                }
+            });
+            return bonus;
+        }
+
+        // Fonction pour mettre à jour l'affichage du catalogue
+        function updateCatalog() {
+            const container = document.getElementById('catalog-items');
+            container.innerHTML = '';
+
+            catalogItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = `catalog-item ${item.unlocked ? '' : 'locked'}`;
+                
+                // Créer la liste des entreprises requises avec leur statut
+                const requirementsList = item.required.map(companyName => {
+                    const company = entreprises.find(e => e.nom === companyName);
+                    const isUnlocked = company && company.debloque;
+                    return `<span class="${isUnlocked ? 'requirement-met' : 'requirement-pending'}">${companyName}</span>`;
+                }).join('');  // Retiré la virgule ici car gérée en CSS
+                
+                // Calculer le bonus
+                let totalPrice = 0;
+                item.required.forEach(companyName => {
+                    const company = entreprises.find(e => e.nom === companyName);
+                    if (company) {
+                        totalPrice += company.prix;
+                    }
+                });
+                
+                const bonus = Math.ceil(totalPrice / 2000);
+                item.bonus = bonus;
+                const baseValue = 2;
+                const totalValue = baseValue + bonus;
+
+                // Vérifier si toutes les conditions sont remplies
+                const allRequirementsMet = item.required.every(companyName => 
+                    entreprises.find(e => e.nom === companyName && e.debloque)
+                );
+
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="Item ${item.id}">
+                    <div class="requirements">
+                        Requis: ${requirementsList}
+                    </div>
+                    <div class="bonus-info">
+                        ${item.unlocked ? 
+                            `<span class="bonus-preview">DÉBLOQUÉ<br>+${bonus} thunes par colis<br>Total: ${totalValue} thunes/colis</span>` :
+                            allRequirementsMet ? 
+                                `<span class="bonus-preview">DISPONIBLE !<br>+${bonus} thunes par colis<br>Total: ${totalValue} thunes/colis</span>` :
+                                `<span>Bonus potentiel: +${bonus} thunes par colis<br>Total possible: ${totalValue} thunes/colis</span>`
+                        }
+                    </div>
+                `;
+                
+                container.appendChild(itemElement);
+            });
+        }
 
         function updateUI() {
             colisTemuCounter.textContent = `Colis Temu: ${colisTemu}`;
@@ -347,8 +749,11 @@
                     if (colisTemu > 0) {
                         let colisEnvoyes = Math.min(collaborateursEnvoi, colisTemu);
                         colisTemu -= colisEnvoyes;
-                        thune += colisEnvoyes * prixParColis;
-                        earnedSinceLastCharge += colisEnvoyes * prixParColis;
+                        let bonusTotal = calculateTotalBonus();
+                        let gainThunes = colisEnvoyes * bonusTotal;
+                        thune += gainThunes;
+                        earnedSinceLastCharge += gainThunes;
+                        createMoneyAnimation();
                         updateUI();
                     }
                 }, 1000);
@@ -396,6 +801,7 @@
                 colisTemu--;
                 thune += prixParColis;
                 earnedSinceLastCharge += prixParColis;
+                createMoneyAnimation();
                 updateUI();
             }
         });
@@ -442,8 +848,6 @@
         }
 
         function resetGame() {
-            console.log("Fonction resetGame appelée");
-            // Demander confirmation avant de reset
             if (confirm("Êtes-vous sûr de vouloir réinitialiser la partie ? Tout progrès non sauvegardé sera perdu.")) {
                 // Arrêter les intervalles existants
                 if (autoclickInterval) {
@@ -474,6 +878,11 @@
                 temuFactoryAchetee = false;
                 chargesHistory = [];
                 currentMonth = 1;
+
+                // Réinitialisation des entreprises
+                entreprises.forEach(e => e.debloque = false);
+                companyRefreshTime = 180;
+                selectRandomCompanies();
 
                 // Réinitialiser le stockage local
                 localStorage.removeItem('gameState');
@@ -507,16 +916,20 @@
                 temuFactories,
                 collaborateurs_max,
                 collaborateursNonPlaces,
-                temuFactoryAchetee,  // Ajout de cette variable
+                temuFactoryAchetee,
                 timeLeft,
                 earnedSinceLastCharge,
                 multiplicateurLimite,
                 currentCharges,
                 chargesHistory,
-                currentMonth
+                currentMonth,
+                // Ajout des nouvelles variables à sauvegarder
+                entreprises,
+                availableCompanies,
+                companyRefreshTime,
+                catalogItems
             };
 
-            // Sauvegarde dans le stockage local
             localStorage.setItem('gameState', JSON.stringify(gameState));
 
             // Création du fichier de sauvegarde à télécharger
@@ -554,6 +967,22 @@
             currentCharges = gameState.currentCharges;
             chargesHistory = gameState.chargesHistory || [];
             currentMonth = gameState.currentMonth || 1;
+            
+            // Restauration des entreprises
+            if (gameState.entreprises) {
+                entreprises = gameState.entreprises;
+            }
+            if (gameState.availableCompanies) {
+                availableCompanies = gameState.availableCompanies;
+            }
+            if (gameState.companyRefreshTime) {
+                companyRefreshTime = gameState.companyRefreshTime;
+            } else {
+                selectRandomCompanies(); // Seulement si pas de sauvegarde
+            }
+            if (gameState.catalogItems) {
+                Object.assign(catalogItems, gameState.catalogItems);
+            }
 
             // Redémarrer les systèmes automatiques
             if (collaborateursFabrication > 0) {
@@ -564,7 +993,9 @@
             }
 
             updateUI();
+            updateCompaniesDisplay();
             updateChargesHistory();
+            updateCatalog();
         }
 
         function loadGame(event) {
@@ -604,7 +1035,10 @@
 
         // Charger automatiquement la dernière sauvegarde au démarrage du jeu
         window.addEventListener('load', () => {
-            loadGame();
+            initializeCompanies();
+            updateCompaniesDisplay();
+            setInterval(updateCompanyRefreshTimer, 1000);
+            updateCatalog();
         });
 
         console.log("Bouton reset :", resetGameButton); // Devrait afficher l'élément bouton et non null
@@ -645,10 +1079,11 @@
             let colisAEnvoyer = Math.min(colisTemu, nombreColis);
             if (colisAEnvoyer > 0) {
                 colisTemu -= colisAEnvoyer;
-                let gainThunes = colisAEnvoyer * prixParColis;
+                let bonusTotal = calculateTotalBonus();
+                let gainThunes = colisAEnvoyer * bonusTotal;
                 thune += gainThunes;
                 earnedSinceLastCharge += gainThunes;
-                createMoneyAnimation(); // Ajouter l'animation
+                createMoneyAnimation();
                 updateUI();
             }
         }
@@ -663,10 +1098,11 @@
                     if (colisTemu > 0) {
                         let colisEnvoyes = Math.min(collaborateursEnvoi, colisTemu);
                         colisTemu -= colisEnvoyes;
-                        let gainThunes = colisEnvoyes * prixParColis;
+                        let bonusTotal = calculateTotalBonus();
+                        let gainThunes = colisEnvoyes * bonusTotal;
                         thune += gainThunes;
                         earnedSinceLastCharge += gainThunes;
-                        createMoneyAnimation(); // Ajouter l'animation
+                        createMoneyAnimation();
                         updateUI();
                     }
                 }, 1000);
@@ -679,10 +1115,435 @@
                 colisTemu--;
                 thune += prixParColis;
                 earnedSinceLastCharge += prixParColis;
-                createMoneyAnimation(); // Ajouter l'animation
+                createMoneyAnimation();
                 updateUI();
             }
         });
+
+        const entreprises = [
+            {
+                nom: "TechnoGlide Electronics",
+                produit: "Écouteurs sans fil",
+                prix: 1500,
+                debloque: false
+            },
+            {
+                nom: "LumaPix Devices",
+                produit: "Caméra miniature",
+                prix: 2000,
+                debloque: false
+            },
+            {
+                nom: "VeloTech Sports",
+                produit: "Gants de fitness connectés",
+                prix: 1800,
+                debloque: false
+            },
+            {
+                nom: "KitchenPro Robotics",
+                produit: "Mini robot culinaire",
+                prix: 2500,
+                debloque: false
+            },
+            {
+                nom: "SleepWell Industries",
+                produit: "Masque de sommeil intelligent",
+                prix: 1200,
+                debloque: false
+            },
+            {
+                nom: "EcoGreen Solutions",
+                produit: "Gourde auto-nettoyante",
+                prix: 1600,
+                debloque: false
+            },
+            {
+                nom: "PetJoy Electronics",
+                produit: "Collier GPS pour animaux",
+                prix: 2200,
+                debloque: false
+            },
+            {
+                nom: "BeautyTech Labs",
+                produit: "Brosse à cheveux ionique",
+                prix: 1900,
+                debloque: false
+            },
+            {
+                nom: "SmartHome Dynamics",
+                produit: "Ampoule connectée",
+                prix: 1300,
+                debloque: false
+            },
+            {
+                nom: "FitLife Gear",
+                produit: "Corde à sauter connectée",
+                prix: 1400,
+                debloque: false
+            },
+            {
+                nom: "AudioMax Systems",
+                produit: "Mini enceinte portable",
+                prix: 2100,
+                debloque: false
+            },
+            {
+                nom: "CleanTech Solutions",
+                produit: "Désinfectant UV portable",
+                prix: 1700,
+                debloque: false
+            },
+            {
+                nom: "GardenPro Tools",
+                produit: "Capteur d'humidité pour plantes",
+                prix: 1100,
+                debloque: false
+            },
+            {
+                nom: "BabyTech Care",
+                produit: "Moniteur de sommeil bébé",
+                prix: 2300,
+                debloque: false
+            },
+            {
+                nom: "CargoFlex Logistics",
+                produit: "Mini drone de livraison",
+                prix: 3000,
+                debloque: false
+            },
+            {
+                nom: "SafeGuard Tech",
+                produit: "Serrure connectée",
+                prix: 2400,
+                debloque: false
+            },
+            {
+                nom: "AquaPure Systems",
+                produit: "Filtre à eau intelligent",
+                prix: 2600,
+                debloque: false
+            },
+            {
+                nom: "WorkSpace Solutions",
+                produit: "Support ordinateur ajustable",
+                prix: 1800,
+                debloque: false
+            },
+            {
+                nom: "LightFlow Industries",
+                produit: "Lampe de bureau adaptative",
+                prix: 2000,
+                debloque: false
+            },
+            {
+                nom: "TravelTech Gear",
+                produit: "Adaptateur universel",
+                prix: 1500,
+                debloque: false
+            },
+            {
+                nom: "MediTech Solutions",
+                produit: "Pilulier connecté",
+                prix: 2800,
+                debloque: false
+            },
+            {
+                nom: "SoundWave Audio",
+                produit: "Casque antibruit",
+                prix: 2200,
+                debloque: false
+            },
+            {
+                nom: "EcoCharge Systems",
+                produit: "Chargeur solaire portable",
+                prix: 1900,
+                debloque: false
+            },
+            {
+                nom: "SmartWear Tech",
+                produit: "Montre connectée",
+                prix: 2500,
+                debloque: false
+            },
+            {
+                nom: "CoolBreeze Electronics",
+                produit: "Mini ventilateur USB",
+                prix: 1200,
+                debloque: false
+            },
+            {
+                nom: "SecureData Systems",
+                produit: "Clé USB cryptée",
+                prix: 1700,
+                debloque: false
+            },
+            {
+                nom: "GameTech Industries",
+                produit: "Manette de jeu portable",
+                prix: 2100,
+                debloque: false
+            },
+            {
+                nom: "HealthTrack Devices",
+                produit: "Bracelet d'activité",
+                prix: 1800,
+                debloque: false
+            },
+            {
+                nom: "CameraPlus Tech",
+                produit: "Objectif pour smartphone",
+                prix: 1600,
+                debloque: false
+            },
+            {
+                nom: "PowerBank Solutions",
+                produit: "Batterie externe",
+                prix: 1400,
+                debloque: false
+            },
+            {
+                nom: "SmartLight Systems",
+                produit: "Veilleuse intelligente",
+                prix: 1300,
+                debloque: false
+            },
+            {
+                nom: "CarTech Innovations",
+                produit: "Chargeur voiture USB",
+                prix: 1500,
+                debloque: false
+            },
+            {
+                nom: "WeatherTech Gear",
+                produit: "Station météo miniature",
+                prix: 2300,
+                debloque: false
+            },
+            {
+                nom: "StoragePro Solutions",
+                produit: "Disque dur portable",
+                prix: 2000,
+                debloque: false
+            },
+            {
+                nom: "AirPure Technologies",
+                produit: "Purificateur d'air portable",
+                prix: 2700,
+                debloque: false
+            },
+            {
+                nom: "TimeSmart Devices",
+                produit: "Réveil intelligent",
+                prix: 1600,
+                debloque: false
+            },
+            {
+                nom: "SecurityPlus Systems",
+                produit: "Mini caméra de surveillance",
+                prix: 2400,
+                debloque: false
+            },
+            {
+                nom: "SportsTech Gear",
+                produit: "Compteur de pas",
+                prix: 1400,
+                debloque: false
+            },
+            {
+                nom: "LightPro Industries",
+                produit: "Lampe de poche LED",
+                prix: 1200,
+                debloque: false
+            },
+            {
+                nom: "SmartScale Tech",
+                produit: "Balance connectée",
+                prix: 1900,
+                debloque: false
+            },
+            {
+                nom: "AudioPro Systems",
+                produit: "Microphone USB",
+                prix: 2100,
+                debloque: false
+            },
+            {
+                nom: "CoolTech Solutions",
+                produit: "Support de refroidissement",
+                prix: 1700,
+                debloque: false
+            },
+            {
+                nom: "HomeSecure Devices",
+                produit: "Détecteur de fumée connecté",
+                prix: 2200,
+                debloque: false
+            },
+            {
+                nom: "BikeTech Gear",
+                produit: "Compteur vélo",
+                prix: 1800,
+                debloque: false
+            },
+            {
+                nom: "SmartCook Appliances",
+                produit: "Thermomètre cuisine connecté",
+                prix: 1500,
+                debloque: false
+            },
+            {
+                nom: "SleepTech Solutions",
+                produit: "Oreiller intelligent",
+                prix: 2600,
+                debloque: false
+            },
+            {
+                nom: "DrinkSmart Tech",
+                produit: "Bouteille connectée",
+                prix: 1600,
+                debloque: false
+            },
+            {
+                nom: "PetCare Systems",
+                produit: "Distributeur nourriture automatique",
+                prix: 2300,
+                debloque: false
+            },
+            {
+                nom: "GymTech Gear",
+                produit: "Elastique connecté",
+                prix: 1400,
+                debloque: false
+            },
+            {
+                nom: "SmartMirror Tech",
+                produit: "Miroir connecté",
+                prix: 2800,
+                debloque: false
+            },
+            {
+                nom: "BagTech Solutions",
+                produit: "Sac à dos antivol",
+                prix: 2000,
+                debloque: false
+            }
+        ];
+
+        // Fonction pour sélectionner 10 entreprises au hasard
+        function selectRandomCompanies() {
+            let availablePool = entreprises.filter(e => !e.debloque);
+            availableCompanies = [];
+            
+            for(let i = 0; i < Math.min(10, availablePool.length); i++) {
+                let randomIndex = Math.floor(Math.random() * availablePool.length);
+                availableCompanies.push(availablePool[randomIndex]);
+                availablePool.splice(randomIndex, 1);
+            }
+            
+            updateCompaniesDisplay();
+        }
+
+        // Fonction pour mettre à jour l'affichage des entreprises
+        function updateCompaniesDisplay() {
+            const container = document.getElementById('available-companies');
+            container.innerHTML = '';
+
+            availableCompanies.forEach(company => {
+                const companyElement = document.createElement('div');
+                companyElement.className = 'company-item';
+                companyElement.innerHTML = `
+                    <h4>${company.nom}</h4>
+                    <p>Prix: ${company.prix} thunes</p>
+                    <button 
+                        class="buy-button" 
+                        onclick="buyCompany('${company.nom}')"
+                        ${thune < company.prix || company.debloque ? 'disabled' : ''}
+                    >
+                        ${company.debloque ? 'Déjà acheté' : 'Acheter'}
+                    </button>
+                `;
+                container.appendChild(companyElement);
+            });
+        }
+
+        // Fonction pour acheter une entreprise
+        function buyCompany(companyName) {
+            const company = availableCompanies.find(c => c.nom === companyName);
+            if (company && thune >= company.prix && !company.debloque) {
+                thune -= company.prix;
+                
+                // Trouver et mettre à jour l'entreprise dans la liste principale
+                const mainCompany = entreprises.find(c => c.nom === companyName);
+                if (mainCompany) {
+                    mainCompany.debloque = true;
+                }
+
+                // Vérifier si de nouveaux items peuvent être débloqués
+                catalogItems.forEach(item => {
+                    if (!item.unlocked) {
+                        const allRequirementsMet = item.required.every(reqCompany => 
+                            entreprises.find(e => e.nom === reqCompany && e.debloque)
+                        );
+                        if (allRequirementsMet) {
+                            item.unlocked = true;
+                            item.bonus = calculateItemBonus(item.required);
+                        }
+                    }
+                });
+
+                // Mettre à jour l'affichage
+                updateUI();
+                updateCatalog();
+                updateCompaniesDisplay();
+            }
+        }
+
+        // Timer pour rafraîchir les entreprises
+        function updateCompanyRefreshTimer() {
+            companyRefreshTime--;
+            
+            if (companyRefreshTime <= 0) {
+                companyRefreshTime = 180;
+                selectRandomCompanies();
+            }
+
+            const minutes = Math.floor(companyRefreshTime / 60);
+            const seconds = companyRefreshTime % 60;
+            document.getElementById('company-refresh-timer').textContent = 
+                `Actualisation dans: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initialisation
+        selectRandomCompanies();
+        setInterval(updateCompanyRefreshTimer, 1000);
+
+        // Modifier la fonction updateUI existante pour inclure la mise à jour des boutons d'achat
+        const originalUpdateUI = updateUI;
+        updateUI = function() {
+            originalUpdateUI();
+            updateCompaniesDisplay();
+        };
+
+        // Modifiez la fonction selectRandomCompanies pour ne pas la déclencher automatiquement au chargement
+        function initializeCompanies() {
+            const savedState = localStorage.getItem('gameState');
+            if (savedState) {
+                try {
+                    const gameState = JSON.parse(savedState);
+                    if (gameState.availableCompanies && gameState.companyRefreshTime) {
+                        availableCompanies = gameState.availableCompanies;
+                        companyRefreshTime = gameState.companyRefreshTime;
+                    } else {
+                        selectRandomCompanies();
+                    }
+                } catch (error) {
+                    console.error('Erreur lors du chargement des entreprises:', error);
+                    selectRandomCompanies();
+                }
+            } else {
+                selectRandomCompanies();
+            }
+        }
     </script>
 </body>
 
